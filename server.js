@@ -1,10 +1,34 @@
-import express from 'express';
-import userRouter from './routes/user-routes.js';
+const http = require('http');
 
-const app = express();
+const app = require('./index');
 
-app.listen(3000, () => {
-    console.log('health management backend app listening at http://localhost:3000')
-})
+const mongoose = require('mongoose');
 
-app.use(userRouter)
+const PORT = process.env.PORT || 8000;
+
+const MONGO_URL = 'mongodb+srv://hms-api:9YqzjKCDmTm0kEV3@hms-cluster-one.cu9iuvz.mongodb.net/?retryWrites=true&w=majority&appName=hms-cluster-one'
+
+const server = http.createServer(app);
+
+mongoose.connection.once('open', ()=>{
+    console.log('Connected to MongoDB o');
+});
+
+mongoose.connection.on('error', (error)=>{
+    console.error('Error connecting to MongoDB', error);
+});
+
+async function startServer(){
+    await mongoose.connect(MONGO_URL);
+    server.listen(
+        PORT,()=>{
+            console.log(`Server running o on port ${PORT}`);
+        }
+    )
+}
+
+startServer();
+
+
+
+

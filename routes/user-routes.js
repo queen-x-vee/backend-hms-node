@@ -7,7 +7,19 @@
 //admin should be able to see buyer profile
 
 // import express and create the router; import controllers
+
 const express = require('express')
+const {createNewUser} = require('../controllers/user.controller')
+
+
+const userRouter = express.Router()
+
+// user routes
+userRouter.post('/register', createNewUser) // register/sign-up/create user
+
+module.exports = userRouter
+
+/*const express = require('express')
 const { createUser, login, logout, getUsers, getUser, updateUser, deleteUser } = require('../controllers/userController')
 const auth = require('../middleware/auth')
 const { verifyEmail, getVerifiedPage } = require('../controllers/verifyEmailController')
@@ -49,4 +61,4 @@ userRouter.put('/profile', auth, upload.single('profile_picture'), updateUser)
 userRouter.delete('/delete', auth, deleteUser)
 
 // export user router
-module.exports = userRouter
+module.exports = userRouter*/
