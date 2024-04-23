@@ -1,8 +1,21 @@
 const express = require('express');
 
 
-function createNewUser(req, res){
-    res.status(200).json({success: true, message: 'New user created'})
+async function createNewUser(req, res){
+    try{
+        const {username, email, password, isAdmin} = req.body;
+        if (!username ||!email ||!password ||!isAdmin){
+            res.status(400).json({success: false, message: 'Please provide all required fields'})
+        }
+        const oldUser = await UserModel.findOne({$or: [{email}]})
+        if (oldUser){
+            res.status(400).json({success: false, message: 'An account with this email already exists'})
+        }
+        console.log('User created')
+
+    } catch(err){
+        res.status(500).json({success: false, message: err.message})
+    }
 }
 
 function getAllUsers(req, res){

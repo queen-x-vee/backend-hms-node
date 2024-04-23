@@ -3,3 +3,8 @@
 //each buyer should have a profile
 
 //there should be a list of buyers which only admin should have access to
+
+const express = require('express')
+
+const cartRoutes = express.Router()
+
