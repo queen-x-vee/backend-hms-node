@@ -1,12 +1,13 @@
 const express = require('express');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv').config();
 const path = require('path');
 const morgan = require('morgan');
 
 const userRouter = require('./routes/user-routes')
 
 const app = express();
-
 
 app.use(cors({
     origin: 'http://localhost:3000',
