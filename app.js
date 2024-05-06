@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const dotenv = require('dotenv').config();
 const path = require('path');
 const morgan = require('morgan');
+const errorHandler = require('./middleware/error.middleware');
 
 const userRouter = require('./routes/user-routes');
 const e = require('express');
@@ -22,11 +23,13 @@ app.use(bodyParser.json());
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-app.use('/user', userRouter);
+app.use('/api/user', userRouter);
 
 
 app.get('/*', (req, res) => {
     res.sendFile(path.join(__dirname,'..', 'public', 'index.html'));
 });
+
+app.use(errorHandler);
 
 module.exports = app;
