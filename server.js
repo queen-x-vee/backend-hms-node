@@ -7,7 +7,6 @@ const PORT = process.env.PORT || 8000;
 const server = http.createServer(app);
 
 
-
 mongoose.connection.once('open', ()=>{
     console.log('Connected to MongoDB o');
 });

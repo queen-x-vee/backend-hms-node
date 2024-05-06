@@ -5,7 +5,8 @@ const dotenv = require('dotenv').config();
 const path = require('path');
 const morgan = require('morgan');
 
-const userRouter = require('./routes/user-routes')
+const userRouter = require('./routes/user-routes');
+const e = require('express');
 
 const app = express();
 
@@ -16,6 +17,9 @@ app.use(morgan('combined'))
 
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/user', userRouter);
