@@ -2,6 +2,7 @@ const UserModel = require("../models/user.mongo");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const e = require("express");
 
 /*const generateToken = (user) => {
     const payload = {
@@ -104,13 +105,13 @@ async function loginUser(req, res) {
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
 
     const token = generateToken(user._id);
-      res.cookie("token", token, {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-        sameSite: "none",
-        secure: true,
-      });
+    res.cookie("token", token, {
+      path: "/",
+      httpOnly: true,
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+      sameSite: "none",
+      secure: true,
+    });
 
     if (user && passwordIsCorrect) {
       const { _id, id, username, email, isAdmin } = user;
@@ -125,42 +126,112 @@ async function loginUser(req, res) {
         token,
       });
     } else {
-        res.status(400).json({ success: false, message: "email or password incorrect" });
-      }
-  
+      res
+        .status(400)
+        .json({ success: false, message: "email or password incorrect" });
+    }
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 }
 
 function logoutUser(req, res) {
-    res.cookie("token", "", {
-        path: "/",
-        httpOnly: true,
-        expires: new Date(0),
-        sameSite: "none",
-        secure: true,
-      });
-     return res.status(200).json({ success: true, message: "User logged out successfully" });
+  res.cookie("token", "", {
+    path: "/",
+    httpOnly: true,
+    expires: new Date(0),
+    sameSite: "none",
+    secure: true,
+  });
+  return res
+    .status(200)
+    .json({ success: true, message: "User logged out successfully" });
+}
+
+async function logInStatus(req, res) {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.json(false)
+        }
+        const verified = jwt.verify(token, process.env.JWT_SECRET);
+        if (verified) {
+            return res.json(true)
+        }else {
+            return res.json(false)
+        }
+    } catch (err) {
+        return res.status(401).json({
+            success: false,
+            message: "You are not authorized , please login"
+        });
+    }
 }
 
 function getAllUsers(req, res) {
   res.status(200).json({ success: true, message: "All users retrieved" });
 }
 
-function getUser(req, res) {
-  
+async function getAdmin(req, res) {
+  const user = await UserModel.findById(req.user._id);
+  if (user) {
+    const { _id, id, username, email, isAdmin } = user;
+    res.status(200).json({
+      _id,
+      id,
+      username,
+      email,
+      isAdmin,
+      success: true,
+      message: "User retrieved",
+    });
+  } else {
+    res.status(404).json({ success: false, message: "User not found" });
+  }
 }
 
-function updateUser(req, res) {
-  res.status(200).json({ success: true, message: "User updated" });
+async function getCustomer(req, res) {
+  try {
+    const {email} = req.params; 
+    const user = await UserModel.findOne({ email });
+    if (user) {
+        console.log(user)
+        const { _id, id, username, email, isAdmin } = user;
+        res.status(200).json({
+          _id,
+          id,
+          username,
+          email,
+          isAdmin,
+          success: true,
+          message: "Customer retrieved",
+        });
+      } else {
+        res.status(404).json({ success: false, message: "Customer not found" });
+    }
+
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+async function updateAdmin(req, res) {
+  const user = await UserModel.findById(req.user._id);
+
+  if (user) {
+    const { username, email, isAdmin } = user;
+    user.username = req.body.username || username;
+    user.email = req.body.email || email; 
+    user.isAdmin = req.body.isAdmin || isAdmin;}
 }
 
 module.exports = {
   createNewUser,
   getAllUsers,
-  getUser,
-  updateUser,
+  getAdmin,
+  getCustomer,
+  updateAdmin,
   loginUser,
   logoutUser,
+  logInStatus
 };

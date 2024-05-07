@@ -35,7 +35,11 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
-    }
+    },
+    cart: [{
+        type: String,
+        ref: 'Cart'
+    }]
 }, {
     timestamps: true // add createdAt and updatedAt timestamps
 });
