@@ -9,7 +9,7 @@ userRouter.post('/register', createNewUser) // register/sign-up/create user
 userRouter.post('/login', loginUser) // login user
 userRouter.get('/logout', logoutUser) // logout user
 userRouter.get('/loggedIn', logInStatus) // logout user
-userRouter.get('/user', protect, getAdmin) // get user -admin
+userRouter.get('/admin', protect, getAdmin) // get user -admin
 userRouter.get('/customer/:email', protect, getCustomer) // get user -admin
 userRouter.patch('/updateAdmin',protect, updateAdmin) // update user -admin
 userRouter.get('/users', getAllUsers) // get all users -admin

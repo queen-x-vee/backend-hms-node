@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 
 const productSchema =  new mongoose.Schema({
-    productId: {
-        type: String ,
-        required: true,
-        unique: true
-    },
     productName: {
+        type: String,
+        required: true
+    },
+    category: {
         type: String,
         required: true
     },
@@ -22,7 +21,10 @@ const productSchema =  new mongoose.Schema({
         type: String,
         required: true
     },
-    sideEffects: [String]
+    sideEffects: {
+        type: String,
+        required: true
+    }
 });
 
 const ProductModel = mongoose.model('Product', productSchema);

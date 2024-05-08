@@ -8,7 +8,8 @@ const errorHandler = require('./middleware/error.middleware');
 const cookieParser = require('cookie-parser');
 
 const userRouter = require('./routes/user-routes');
-
+const productRouter = require('./routes/product-routes');
+const cartRouter = require('./routes/cart-routes');
 
 const app = express();
 
@@ -26,6 +27,8 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use('/api/user', userRouter);
+app.use('/api/product', productRouter)
+app.use('/api/cart' , cartRouter)
 
 
 app.get('/*', (req, res) => {
