@@ -14,10 +14,8 @@ const cartRouter = require('./routes/cart-routes');
 const app = express();
 
 app.use(cors({
-    origin: [
-        'http://localhost:3000',
-        'https://pharmacy-inventory-system-1vnk.onrender.com'
-    ],
+    origin: 'http://localhost:3000',
+    credentials: true,
 }));
 app.use(morgan('combined'))
 
