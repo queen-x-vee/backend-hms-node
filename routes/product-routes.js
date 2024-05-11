@@ -12,7 +12,7 @@ const productRouter = express.Router();
 
 productRouter.post('/create',  createProduct);
 productRouter.post('/createNewCart',  createNewProduct);
-productRouter.get('/all', getProducts);
+productRouter.get('/all', protect, getProducts);
 productRouter.get('/:name',  getProductByName);
 //productRouter.post('/addToCart', protect, addProductToCart);
 productRouter.patch('/update/:id', protect,updateProduct);
