@@ -21,6 +21,7 @@ const bcrypt = require("bcryptjs");
 async function protect(req, res, next){
     try {
         const token = req.cookies.token;
+        console.log(req.headers)
         if (!token) {
             return res.status(401).json({
                 success: false,
