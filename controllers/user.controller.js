@@ -222,7 +222,17 @@ async function updateAdmin(req, res) {
     const { username, email, isAdmin } = user;
     user.username = req.body.username || username;
     user.email = req.body.email || email; 
-    user.isAdmin = req.body.isAdmin || isAdmin;}
+    user.isAdmin = req.body.isAdmin || isAdmin;
+
+    const updatedUser = await user.save()
+    res.status(200).json({
+      user:updatedUser
+    })
+  }else{
+    res.status(404).json({
+      message: 'User not found'
+    })
+  }
 }
 
 module.exports = {

@@ -7,10 +7,10 @@ const express = require('express')
 const cartRouter = express.Router()
 
 const { protect} = require('../middleware/auth.middleware')
-const { createCart} = require('../controllers/cart.controller')
+const { addToCart} = require('../controllers/cart.controller')
 
 
-cartRouter.post('/create/:email', protect, createCart);
+cartRouter.post('/add-to-cart', protect, addToCart );
 
 module.exports = cartRouter
 

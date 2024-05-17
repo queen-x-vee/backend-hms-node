@@ -102,6 +102,13 @@ async function updateProduct(req, res) {
     product.sideEffects = req.body.sideEffects || sideEffects
     product.category = req.body.category || category
     product.quantity = req.body.quantity || quantity
+
+    const updatedProduct = await product.save();
+    res.status(200).json({
+      message: 'Product successfully updated',
+      product: updatedProduct
+
+    })
     
   }
 }
