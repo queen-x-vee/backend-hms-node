@@ -1,73 +1,67 @@
-const express = require("express");
-const router = express.Router();
-const CartModel = require("../models/cart.mongo");
-const ProductModel = require("../models/product.mongo");
-const UserModel = require("../models/user.mongo");
+const CartModel = require('../models/cart.mongo');
+const ProductModel = require('../models/product.mongo');
+const UserModel = require('../models/user.mongo');
 
-// POST endpoint to add a product to the cart
 async function addToCart(req, res) {
   try {
     const { email, productName, quantity } = req.body;
 
-    // Check if the user and product exist
-    const userExists = await UserModel.findOne({ email });
-    const productExists = await ProductModel.findOne({ productName });
+    const user = await UserModel.findOne({ email });
+    const product = await ProductModel.findOne({ productName });
 
-    if (!userExists) {
+    if (!user) {
       return res.status(404).json({ message: "User not found." });
     }
-    if (!productExists) {
+
+    if (!product) {
       return res.status(404).json({ message: "Product not found." });
     }
-    if (userExists && productExists) {
-      const userId = userExists._id;
-      const productId = productExists._id;
-      const existingCartItem = await CartModel.findOne({
-        user: userId,
-        "cartContents.item": productId, 
-      });
 
-      if (existingCartItem) {
-        // If product is already in the cart, update its quantity
-        await CartModel.updateOne(
-          { user: userId, "cartContents.item": productId },
-          { $inc: { "cartContents.$.quantity": quantity } }
-        );
+    const userId = user._id;
+    const productId = product._id;
+    const productPrice = product.price;
+    const availableQuantity = product.quantity;
+
+    if (quantity > availableQuantity) {
+      return res.status(400).json({ message: "Requested quantity exceeds available stock." });
+    }
+
+    let cart = await CartModel.findOne({ user: userId });
+
+    if (cart) {
+      const cartItem = cart.cartContents.find(item => item.item.equals(productId));
+
+      if (cartItem) {
+        const newQuantity = cartItem.quantity + quantity;
+
+        if (newQuantity > availableQuantity) {
+          return res.status(400).json({ message: "Total quantity in cart exceeds available stock." });
+        }
+
+        cartItem.quantity = newQuantity;
+        cartItem.totalPrice = newQuantity * productPrice;
       } else {
-        // If the product is not in the cart, add it
-        await CartModel.findOneAndUpdate(
-          { user: userId },
-          { $push: { cartContents: { item: productId, quantity: quantity } } },
-          { upsert: true }
-        );
+        cart.cartContents.push({
+          item: productId,
+          quantity,
+          price: productPrice,
+          totalPrice: quantity * productPrice
+        });
       }
-
-      res.status(200).json({ message: "Product added to cart successfully." });
-    }
-
-    /*if (!productExists) {
-      return res.status(404).json({ message: "Product not found." });
-    }
-
-    // Check if the product is already in the user's cart
-    const existingCartItem = await CartModel.findOne({ user: userId, 'cartContents.item': productId });
-
-    if (existingCartItem) {
-      // If product is already in the cart, update its quantity
-      await CartModel.updateOne(
-        { user: userId, 'cartContents.item': productId },
-        { $inc: { 'cartContents.$.quantity': quantity } }
-      );
     } else {
-      // If the product is not in the cart, add it
-      await CartModel.findOneAndUpdate(
-        { user: userId },
-        { $push: { cartContents: { item: productId, quantity: quantity } } },
-        { upsert: true }
-      );
+      cart = new CartModel({
+        user: userId,
+        cartContents: [{
+          item: productId,
+          quantity,
+          price: productPrice,
+          totalPrice: quantity * productPrice
+        }]
+      });
     }
 
-    res.status(200).json({ message: "Product added to cart successfully." });*/
+    await cart.save();
+    res.status(200).json({ message: "Product added to cart successfully." , cart});
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error." });
