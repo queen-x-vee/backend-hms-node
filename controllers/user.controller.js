@@ -192,7 +192,7 @@ async function getAdmin(req, res) {
 
 async function getCustomer(req, res) {
   try {
-    const {email} = req.body; 
+    const {email} = req.params; 
     const user = await UserModel.findOne({ email });
     if (user) {
         console.log(user)
