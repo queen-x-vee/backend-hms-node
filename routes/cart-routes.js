@@ -10,7 +10,7 @@ const { protect} = require('../middleware/auth.middleware')
 const { addToCart} = require('../controllers/cart.controller')
 
 
-cartRouter.post('/add-to-cart', protect, addToCart );
+cartRouter.post('/add-to-cart', addToCart );
 
 module.exports = cartRouter
 
