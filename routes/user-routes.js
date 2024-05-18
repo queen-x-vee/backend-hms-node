@@ -10,7 +10,7 @@ userRouter.post('/login', loginUser) // login user
 userRouter.get('/logout', logoutUser) // logout user
 userRouter.get('/loggedIn', logInStatus) // logout user
 userRouter.get('/admin', getAdmin) // get user -admin
-userRouter.get('/customer',  getCustomer) // get user -admin
+userRouter.get('/customer/:email', getCustomer) // get user -admin
 userRouter.patch('/updateAdmin',protect, updateAdmin) // update user -admin
 userRouter.get('/users', getAllUsers) // get all users -admin
 
