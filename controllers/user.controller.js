@@ -59,13 +59,6 @@ async function createNewUser(req, res) {
     });
 
     const token = generateToken(newUser._id);
-    res.cookie("token", token, {
-      path: "/",
-      httpOnly: true,
-      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
-      sameSite: "none",
-      secure: true,
-    });
 
     if (newUser) {
       const { _id, id, username, email, isAdmin } = newUser;
@@ -105,13 +98,13 @@ async function loginUser(req, res) {
     const passwordIsCorrect = await bcrypt.compare(password, user.password);
 
     const token = generateToken(user._id);
-    res.cookie("token", token, {
+    /*res.cookie("token", token, {
       path: "/",
       httpOnly: true,
       expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
       sameSite: "none",
       secure: true,
-    });
+    });*/
 
     if (user && passwordIsCorrect) {
       const { _id, id, username, email, isAdmin } = user;
@@ -135,7 +128,7 @@ async function loginUser(req, res) {
   }
 }
 
-function logoutUser(req, res) {
+/*function logoutUser(req, res) {
   res.cookie("token", "", {
     path: "/",
     httpOnly: true,
@@ -146,7 +139,7 @@ function logoutUser(req, res) {
   return res
     .status(200)
     .json({ success: true, message: "User logged out successfully" });
-}
+}*/
 
 async function logInStatus(req, res) {
     try {
@@ -242,6 +235,6 @@ module.exports = {
   getCustomer,
   updateAdmin,
   loginUser,
-  logoutUser,
+  //logoutUser,
   logInStatus
 };
