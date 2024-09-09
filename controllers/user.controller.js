@@ -226,6 +226,26 @@ async function updateAdmin(req, res) {
   }
 }
 
+async function getNonAdminUsers(req, res) {
+  try {
+    const nonAdminUsers = await UserModel.find({ isAdmin: false })
+      .select('-password') // Exclude password from the result
+      .lean(); // Convert to plain JavaScript objects for better performance
+
+    res.status(200).json({
+      success: true,
+      message: "Non-admin users retrieved successfully",
+      users: nonAdminUsers
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving non-admin users",
+      error: err.message
+    });
+  }
+}
+
 module.exports = {
   createNewUser,
   getAllUsers,
@@ -234,5 +254,6 @@ module.exports = {
   updateAdmin,
   loginUser,
   //logoutUser,
-  logInStatus
+  logInStatus,
+  getNonAdminUsers
 };
