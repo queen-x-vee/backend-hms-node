@@ -29,14 +29,14 @@ const generateToken = (id) => {
 async function createNewUser(req, res) {
   try {
     const { username, email, password, isAdmin } = req.body;
-    if (!username || !email || !password || !isAdmin) {
-      res.status(400).json({
+    if (!username || !email || !password || isAdmin === undefined) {
+      return res.status(400).json({
         success: false,
         message: "Please provide all required fields",
       });
     }
     if (password.length < 6) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "Password must be at least 6 characters long",
       });
@@ -44,37 +44,35 @@ async function createNewUser(req, res) {
 
     const userExists = await UserModel.findOne({ email });
     if (userExists) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: "An account with this email already exists",
       });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = await UserModel.create({
       username,
       email,
       isAdmin,
-      password,
+      password: hashedPassword,
       id: uuidv4(),
     });
 
     const token = generateToken(newUser._id);
 
-    if (newUser) {
-      const { _id, id, username, email, isAdmin } = newUser;
-      res.status(201).json({
-        _id,
-        id,
-        username,
-        email,
-        isAdmin,
-        success: true,
-        message: "User created",
-        token,
-      });
-    } else {
-      res.status(400).json({ success: false, message: "Something went wrong" });
-    }
+    const { _id, id } = newUser;
+    res.status(201).json({
+      _id,
+      id,
+      username,
+      email,
+      isAdmin,
+      success: true,
+      message: "User created",
+      token,
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
